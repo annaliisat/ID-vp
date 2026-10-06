@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/annaliisat/ID-vp#readme",
   "dependencies": {
+    "body-parser": "^2.3.0",
     "ejs": "^6.0.1",
     "express": "^5.2.1"
   }
