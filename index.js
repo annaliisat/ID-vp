@@ -126,7 +126,13 @@ app.get("/eestifilm/inimesed", async (req, res)=>{
 });
 
 app.get("/eestifilm/inimesed_lisa", async (req, res)=>{
-	res.render("eestifilminimesed_lisa", {notice: "Ootan sisestust!"});
+	res.render("eestifilminimesed_lisa", {
+			notice: "Ootan sisestust!",
+			firstNameValue: null,
+			lastNameValue: null,
+			bornValue: null,
+			deceasedValue: null
+	});
 });
 
 app.post("/eestifilm/inimesed_lisa", async (req, res)=>{
@@ -137,12 +143,31 @@ app.post("/eestifilm/inimesed_lisa", async (req, res)=>{
 	const timeNow = new Date();
 	if(!req.body.firstNameInput || !req.body.lastNameInput || !req.body.bornInput || isNaN(bornDate.getTime()) || bornDate > timeNow) {
 		console.log("Andmed pole korrektsed!");
-		return res.render("eestifilminimesed_lisa", {notice: "Andmed pole korrektsed"});
+		return res.render("eestifilminimesed_lisa", {
+			notice: "Andmed pole korrektsed",
+			firstNameValue: req.body.firstNameInput,
+			lastNameValue: req.body.lastNameInput,
+			bornValue: req.body.bornInput,
+			deceasedValue: req.body.deceasedInput
+		});
 	}
 	let deceasedDate = null;
 	if(req.body.deceasedInput != "") {
+		const deceasedObj = new
+	Date(req.body.deceasedInput);
+		if(isNaN(deceasedObj.getTime()) || deceasedObj > timeNow || deceasedObj < bornDate) {
+			return 
+	res.render("eestifilminimesed_lisa", { 
+			notice: "Surmakuupäev pole korrektne!",	
+			firstNameValue: req.body.firstNameInput,
+			lastNameValue: req.body.lastNameInput,
+			bornValue: req.body.bornInput,
+			deceasedValue: req.body.deceasedInput
+			});
+		}
 		deceasedDate = req.body.deceasedInput;
 	}
+	
 	let conn;
 	try {
 		conn = await mysql.createConnection({
@@ -158,11 +183,23 @@ app.post("/eestifilm/inimesed_lisa", async (req, res)=>{
 			req.body.bornInput,
 			deceasedDate
 		]);
-		res.render("eestifilminimesed_lisa", {notice: req.body.firstNameInput + " " + req.body.lastNameInput + " Andmebaasi lisatud!"});
-	}
+		res.render("eestifilminimesed_lisa", {notice: req.body.firstNameInput + " " + req.body.lastNameInput + " Andmebaasi lisatud!",
+				firstNameValue: null,
+				lastNameValue: null,
+				bornValue: null,
+				deceasedValue: null
+			});
+		}
+	
 	catch (err) {
 		console.log("Viga andmebaasiga suhtlemisel: " + err);
-		res.render("eestifilminimesed_lisa", {notice: "Tekkis viga, midagi ei leitud!"});
+		res.render("eestifilminimesed_lisa", {
+				notice: "Tekkis viga, midagi ei leitud!",
+				firstNameValue: req.body.firstNameInput,
+				lastNameValue: req.body.lastNameInput,
+				bornValue: req.body.bornInput,
+				deceasedValue: req.body.deceasedInput
+		});
 	}
 	finally {
 		if(conn){
