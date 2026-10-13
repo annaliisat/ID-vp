@@ -95,11 +95,15 @@ app.get("/minust", (req, res)=>{
     res.render("minust");
 });
 
-app.get("/eestifilm", (req, res)=>{
-    res.render("eestifilm");
-});
+//Eesti filmi marsruudid
+const eestiFilmRouter = require('./routes/eestifilmRoutes');
+app.use('/eestifilm', eestiFilmRouter);
 
-app.get("/eestifilm/inimesed", async (req, res)=>{
+/* app.get("/eestifilm", (req, res)=>{
+    res.render("eestifilm");
+}); */
+
+/* app.get("/eestifilm/inimesed", async (req, res)=>{
 	let conn;
 	try {
 		conn = await mysql.createConnection({
@@ -123,9 +127,9 @@ app.get("/eestifilm/inimesed", async (req, res)=>{
 			await conn.end();	
 		}
 	}
-});
+}); */
 
-app.get("/eestifilm/inimesed_lisa", async (req, res)=>{
+/* app.get("/eestifilm/inimesed_lisa", async (req, res)=>{
 	res.render("eestifilminimesed_lisa", {
 			notice: "Ootan sisestust!",
 			firstNameValue: null,
@@ -133,9 +137,9 @@ app.get("/eestifilm/inimesed_lisa", async (req, res)=>{
 			bornValue: null,
 			deceasedValue: null
 	});
-});
+}); */
 
-app.post("/eestifilm/inimesed_lisa", async (req, res)=>{
+/* app.post("/eestifilm/inimesed_lisa", async (req, res)=>{
 	console.log(req.body);
 	//kontrollime andmeid
 	//sisestatud sünnikuupäev (tekst) teisendada kuupäevaks
@@ -206,10 +210,10 @@ app.post("/eestifilm/inimesed_lisa", async (req, res)=>{
 			await conn.end();	
 		}
 	}
-});
+}); */
 	
 // Žanri lisamine
-app.get("/zanrid", (req, res) => {
+/*app.get("/zanrid", (req, res) => {
     res.render("zanrid", {
         notice: "Ootan sisestust!",
         genreNameValue: null,
@@ -228,7 +232,6 @@ app.post("/zanrid", async (req, res) => {
     }
 
     let conn;
-
     try{
         conn = await mysql.createConnection({
             host: process.env.DB_HOST,
@@ -286,7 +289,6 @@ app.post("/ametid", async (req, res) => {
     }
 
     let conn;
-
     try{
         conn = await mysql.createConnection({
             host: process.env.DB_HOST,
@@ -322,6 +324,6 @@ app.post("/ametid", async (req, res) => {
             await conn.end();
         }
     }
-});
+}); */
 	
 	app.listen(5209);
