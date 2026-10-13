@@ -208,4 +208,120 @@ app.post("/eestifilm/inimesed_lisa", async (req, res)=>{
 	}
 });
 	
+// Žanri lisamine
+app.get("/zanrid", (req, res) => {
+    res.render("zanrid", {
+        notice: "Ootan sisestust!",
+        genreNameValue: null,
+        descriptionValue: null
+    });
+});
+
+app.post("/zanrid", async (req, res) => {
+
+    if(!req.body.genreNameInput || !req.body.descriptionInput){
+        return res.render("zanrid", {
+            notice: "Kõik väljad peavad olema täidetud!",
+            genreNameValue: req.body.genreNameInput,
+            descriptionValue: req.body.descriptionInput
+        });
+    }
+
+    let conn;
+
+    try{
+        conn = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_NAME
+        });
+
+        let sqlReq = "INSERT INTO genre (genre_name, description) VALUES (?, ?)";
+
+        await conn.execute(sqlReq, [
+            req.body.genreNameInput,
+            req.body.descriptionInput
+        ]);
+
+        res.render("zanrid", {
+            notice: "Žanr lisatud!",
+            genreNameValue: null,
+            descriptionValue: null
+        });
+
+    } catch(err){
+        console.log(err);
+
+        res.render("zanrid", {
+            notice: "Andmebaasi viga!",
+            genreNameValue: req.body.genreNameInput,
+            descriptionValue: req.body.descriptionInput
+        });
+
+    } finally{
+        if(conn){
+            await conn.end();
+        }
+    }
+});
+
+// Ameti lisamine
+app.get("/ametid", (req, res) => {
+    res.render("ametid", {
+        notice: "Ootan sisestust!",
+        professionNameValue: null,
+        descriptionValue: null
+    });
+});
+
+app.post("/ametid", async (req, res) => {
+
+    if(!req.body.professionNameInput || !req.body.descriptionInput){
+        return res.render("ametid", {
+            notice: "Kõik väljad peavad olema täidetud!",
+            professionNameValue: req.body.professionNameInput,
+            descriptionValue: req.body.descriptionInput
+        });
+    }
+
+    let conn;
+
+    try{
+        conn = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_NAME
+        });
+
+        let sqlReq = "INSERT INTO profession (profession_name, description) VALUES (?, ?)";
+
+        await conn.execute(sqlReq, [
+            req.body.professionNameInput,
+            req.body.descriptionInput
+        ]);
+
+        res.render("ametid", {
+            notice: "Amet lisatud!",
+            professionNameValue: null,
+            descriptionValue: null
+        });
+
+    } catch(err){
+        console.log(err);
+
+        res.render("ametid", {
+            notice: "Andmebaasi viga!",
+            professionNameValue: req.body.professionNameInput,
+            descriptionValue: req.body.descriptionInput
+        });
+
+    } finally{
+        if(conn){
+            await conn.end();
+        }
+    }
+});
+	
 	app.listen(5209);

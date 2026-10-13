@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+	<meta charset="utf-8">
+	<title>Žanri lisamine</title>
+</head>
+<body>
+	<h1>Lisa filmide žanr</h1>
+	<p><%= notice %></p>
+	
+	<form method="POST">
+		<label>Žanri nimi:</label><br>
+		<input type="text" name="genreNameInput" value="<%= genreNameValue ? genreNameValue : '' %>"><br><br>
+
+		<label>Kirjeldus:</label><br>
+		<input type="text" name="descriptionInput" value="<%= descriptionValue ? descriptionValue : '' %>"><br><br>
+
+		<button type="submit">Salvesta žanr</button>
+	</form>
+
+	<p><a href="/">Tagasi avalehele</a></p>
+</body>
+</html>

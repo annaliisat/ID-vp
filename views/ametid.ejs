@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+	<meta charset="utf-8">
+	<title>Ameti lisamine</title>
+</head>
+<body>
+	<h1>Lisa filmiga seotud amet</h1>
+	<p><%= notice %></p>
+	
+	<form method="POST">
+		<label>Ameti nimetus:</label><br>
+		<input type="text" name="professionNameInput" value="<%= professionNameValue ? professionNameValue : '' %>"><br><br>
+
+		<label>Kirjeldus:</label><br>
+		<input type="text" name="descriptionInput" value="<%= descriptionValue ? descriptionValue : '' %>"><br><br>
+
+		<button type="submit">Salvesta amet</button>
+	</form>
+
+	<p><a href="/">Tagasi avalehele</a></p>
+</body>
+</html>
