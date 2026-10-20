@@ -1,0 +1,28 @@
+<h2>Filmi seosed</h2>
+
+<table border="1">
+
+<tr>
+    <th>Inimene</th>
+    <th>Film</th>
+    <th>Amet</th>
+    <th>Tegelaskuju</th>
+</tr>
+
+<% seosed.forEach(seos => { %>
+
+<tr>
+
+    <td><%= seos.person %></td>
+
+    <td><%= seos.movie %></td>
+
+    <td><%= seos.profession %></td>
+
+    <td><%= seos.role_name || "-" %></td>
+
+</tr>
+
+<% }) %>
+
+</table>

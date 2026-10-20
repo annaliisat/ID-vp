@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="utf-8">
+    <title>Lisa seos</title>
+</head>
+<body>
+
+<h2>Lisa seos</h2>
+
+<p><%= typeof notice !== 'undefined' ? notice : '' %></p>
+
+<form method="POST">
+
+    <label>Inimene:</label><br>
+
+    <select name="personId" required>
+        <option value="" selected disabled>Vali inimene</option>
+
+        <% if (people) { %>
+            <% people.forEach(person => { %>
+                <option value="<%= person.id %>">
+                    <%= person.first_name %> <%= person.last_name %>
+                </option>
+            <% }) %>
+        <% } %>
+    </select>
+
+    <br><br>
+
+    <label>Film:</label><br>
+
+    <select name="movieId" required>
+        <option value="" selected disabled>Vali film</option>
+
+        <% if (movies) { %>
+            <% movies.forEach(movie => { %>
+                <option value="<%= movie.id %>">
+                    <%= movie.title %>
+                </option>
+            <% }) %>
+        <% } %>
+    </select>
+
+    <br><br>
+
+    <label>Amet:</label><br>
+
+    <select name="professionId" required>
+        <option value="" selected disabled>Vali amet</option>
+
+        <% if (professions) { %>
+            <% professions.forEach(profession => { %>
+                <option value="<%= profession.id %>">
+                    <%= profession.title %>
+                </option>
+            <% }) %>
+        <% } %>
+    </select>
+
+    <br><br>
+
+    <label>Tegelaskuju nimi:</label><br>
+
+    <input type="text" name="roleName">
+
+    <br><br>
+
+    <button type="submit">
+        Salvesta seos
+    </button>
+
+</form>
+
+<br>
+
+<p>
+    <a href="/eestifilm/seosed_list">
+        Vaata kõiki seoseid
+    </a>
+</p>
+
+<p>
+    <a href="/eestifilm">
+        Tagasi Eesti Filmi avalehele
+    </a>
+</p>
+
+</body>
+</html>

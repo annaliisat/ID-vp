@@ -137,14 +137,69 @@ const inimesedAddPost = async (req, res) => {
 //@access public
 
 //app.get("/zanrid", (req, res) => {
+// Žanrite nimekiri
+const zanrid = async (req, res) => {
+
+    let conn;
+
+    try {
+
+        conn = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_NAME
+        });
+
+        const [sqlRes] = await conn.execute(
+            "SELECT * FROM genre"
+        );
+
+        res.render("zanrid", {
+            notice: "Ootan sisestust!",
+			genreNameValue: "",
+			descriptionValue: "",
+			genreList: sqlRes
+        });
+
+    } catch(err){
+
+        console.log(err);
+
+        res.render("zanrid", {
+            notice: "Andmebaasi viga!",
+			genreNameValue: "",
+			descriptionValue: "",
+			genreList: []
+        });
+
+    } finally {
+
+        if(conn){
+            await conn.end();
+        }
+    }
+};
+
+// Žanri lisamise vorm
+const zanridAdd = (req, res) => {
+
     res.render("zanrid", {
         notice: "Ootan sisestust!",
-        genreNameValue: null,
-        descriptionValue: null   
-	});
-app.post("/zanrid", async (req, res) => {
+        genreNameValue: "",
+        descriptionValue: ""
+    });
 
-    if(!req.body.genreNameInput || !req.body.descriptionInput){
+};
+
+// Žanri salvestamine
+const zanridAddPost = async (req, res) => {
+
+    if(
+        !req.body.genreNameValue ||
+        !req.body.descriptionValue
+    ){
+
         return res.render("zanrid", {
             notice: "Kõik väljad peavad olema täidetud!",
             genreNameValue: req.body.genreNameInput,
@@ -153,7 +208,9 @@ app.post("/zanrid", async (req, res) => {
     }
 
     let conn;
-    try{
+
+    try {
+
         conn = await mysql.createConnection({
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
@@ -161,20 +218,22 @@ app.post("/zanrid", async (req, res) => {
             database: process.env.DB_NAME
         });
 
-        let sqlReq = "INSERT INTO genre (genre_name, description) VALUES (?, ?)";
+        const sqlReq =
+            "INSERT INTO genre (name, description) VALUES (?, ?)";
 
         await conn.execute(sqlReq, [
-            req.body.genreNameInput,
-            req.body.descriptionInput
+            req.body.genreNameValue,
+            req.body.descriptionValue
         ]);
 
         res.render("zanrid", {
             notice: "Žanr lisatud!",
-            genreNameValue: null,
-            descriptionValue: null
+            genreNameValue: "",
+            descriptionValue: ""
         });
 
     } catch(err){
+
         console.log(err);
 
         res.render("zanrid", {
@@ -183,17 +242,15 @@ app.post("/zanrid", async (req, res) => {
             descriptionValue: req.body.descriptionInput
         });
 
-    } finally{
+    } finally {
+
         if(conn){
             await conn.end();
         }
+
     }
-});
 
-//@desc page for adding Estonian genres
-//@route GET /eestifilm/zanrid_add
-//@access public
-
+};
 
 //@desc page listing professions related to film
 //@route GET /eestifilm/ametid
@@ -211,12 +268,23 @@ const ametid = async (req, res)=>{
         const sqlReq = 'SELECT * FROM profession ORDER by id';
         const [sqlRes] = await conn.execute(sqlReq);
         //console.log(sqlRes);
-        res.render('eestifilmametid', {professionList: sqlRes});
+        res.render('ametid', {
+			notice: "Ootan sisestust!",
+			professionNameValue: "",
+			descriptionValue: "",
+			professionList: sqlRes
+			});
     }
     catch (err){
         console.log('Viga andmebaasist lugemisel:' + err);
-        res.render('eestifilmametid', {professionList: []})
-    }
+        res.render('ametid', {
+		notice: "Andmebaasi viga!",
+		professionNameValue: "",
+		descriptionValue: "",
+		professionList: []
+	});
+   
+   }
     finally {
         if(conn) {
             await conn.end();
@@ -230,11 +298,10 @@ const ametid = async (req, res)=>{
 //@access public
 
 const ametidAdd = (req, res)=>{
-    res.render('eestifilmametid_add', {
+    res.render('ametid', {
         notice: 'Ootan sisestust!',
-        title: null,
-        description: null,
-
+        professionNameValue: '',
+        descriptionValue: ''
     });
 };
 
@@ -247,10 +314,10 @@ const ametidAddPost = async (req, res) => {
 
     // Abifunktsioon vormi uuesti kuvamiseks
     const showForm = (notice, clear = false) => {
-        res.render('eestifilmametid_add', {
+        res.render('ametid', {
             notice: notice,
-            title: clear ? null : title,
-            description: clear ? null : description
+			professionNameValue: clear ? '' : title,
+			descriptionValue: clear ? '' : description
 
         });
     };
@@ -291,6 +358,203 @@ const ametidAddPost = async (req, res) => {
     }
 };
 
+const seosed = async (req, res) => {
+
+    let conn;
+
+    try {
+
+        conn = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_NAME
+        });
+
+        const [people] = await conn.execute(
+            "SELECT id, first_name, last_name FROM person"
+        );
+
+        const [movies] = await conn.execute(
+            "SELECT id, title FROM movie"
+        );
+
+        const [professions] = await conn.execute(
+            "SELECT id, title FROM profession"
+        );
+
+        res.render("seosed", {
+            notice: "Vali andmed",
+            people,
+            movies,
+            professions
+        });
+
+    } catch(err){
+
+        console.log(err);
+
+        res.render("seosed", {
+            notice: "Andmete lugemisel tekkis viga",
+            people: [],
+            movies: [],
+            professions: []
+        });
+    }
+
+    finally{
+        if(conn){
+            await conn.end();
+        }
+    }
+};
+
+const seosedPost = async (req, res) => {
+
+    let conn;
+
+    try {
+
+        conn = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_NAME
+        });
+
+        const {
+            personId,
+            movieId,
+            professionId,
+            roleName
+        } = req.body;
+
+        const [exists] = await conn.execute(
+            `SELECT id
+             FROM person_in_movie
+             WHERE person_id = ?
+             AND movie_id = ?
+             AND profession_id = ?
+             AND IFNULL(character_name,'') = IFNULL(?, '')`,
+            [
+                personId,
+                movieId,
+                professionId,
+                roleName
+            ]
+        );
+
+        if(exists.length > 0){
+
+            const [people] =
+                await conn.execute(
+                    "SELECT id, first_name, last_name FROM person"
+                );
+
+            const [movies] =
+                await conn.execute(
+                    "SELECT id, title FROM movie"
+                );
+
+            const [professions] =
+                await conn.execute(
+                    "SELECT id, title FROM profession"
+                );
+
+            return res.render("seosed", {
+                notice: "Selline seos on juba olemas!",
+                people,
+                movies,
+                professions
+            });
+
+        }
+
+        await conn.execute(
+            `INSERT INTO person_in_movie
+            (person_id, movie_id, profession_id, character_name)
+            VALUES (?, ?, ?, ?)`,
+            [
+                personId,
+                movieId,
+                professionId,
+                roleName || null
+            ]
+        );
+
+        res.redirect("/eestifilm/seosed_list");
+
+    } catch(err){
+
+        console.log(err);
+
+    } finally {
+
+        if(conn){
+            await conn.end();
+        }
+
+    }
+
+};
+
+const seosedList = async (req, res) => {
+
+    let conn;
+
+    try {
+
+        conn = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            database: process.env.DB_NAME
+        });
+
+        const sqlReq = `
+            SELECT
+                CONCAT(
+                    p.first_name,
+                    ' ',
+                    p.last_name
+                ) AS person,
+                m.title AS movie,
+                pr.title AS profession,
+                character_name
+            FROM person_in_movie
+            JOIN person p
+                ON person_id = p.id
+            JOIN movie m
+                ON movie_id = m.id
+            JOIN profession pr
+                ON profession_id = pr.id
+            ORDER BY m.title
+        `;
+
+        const [sqlRes] =
+            await conn.execute(sqlReq);
+
+        res.render("seosed_list", {
+            seosed: sqlRes
+        });
+
+    } catch(err){
+
+        console.log(err);
+
+        res.render("seosed_list", {
+            seosed: []
+        });
+
+    } finally {
+
+        if(conn){
+            await conn.end();
+        }
+
+    }
+
+};
 
 module.exports = {
 	eestifilm,
@@ -302,5 +566,8 @@ module.exports = {
 	zanridAddPost,
 	ametid,
 	ametidAdd,
-	ametidAddPost
-}
+	ametidAddPost,
+	seosed,
+    seosedPost,
+    seosedList
+};

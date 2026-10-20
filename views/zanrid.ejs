@@ -8,12 +8,12 @@
 	<h1>Lisa filmide žanr</h1>
 	<p><%= notice %></p>
 	
-	<form method="POST">
+	<form method="POST" action="/eestifilm/zanrid_add">
 		<label>Žanri nimi:</label>
-		<input type="text" name="genreNameInput" value="<%= genreNameValue ? genreNameValue : '' %>">
+		<input type="text" name="genreNameValue" value="<%= genreNameValue ? genreNameValue : '' %>">
 		<br>
 		<label>Kirjeldus:</label>
-		<input type="text" name="descriptionInput" value="<%= descriptionValue ? descriptionValue : '' %>">
+		<input type="text" name="descriptionValue" value="<%= descriptionValue ? descriptionValue : '' %>">
 		<br>
 		<button type="submit">Salvesta žanr</button>
 	</form>
