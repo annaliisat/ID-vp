@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="utf-8">
+    <title>Fotogalerii</title>
+</head>
+<body>
+
+    <h1>Fotogalerii</h1>
+
+    <% photos.forEach(function(photo){ %>
+
+        <figure>
+            <img
+                src="/gallery/normal/<%= photo.filename %>"
+                alt="<%= photo.alttext || 'Galeriifoto' %>"
+                width="400"
+            >
+
+            <figcaption>
+                <%= photo.alttext || 'Galeriifoto' %>
+            </figcaption>
+        </figure>
+
+    <% }); %>
+
+</body>
+</html>
