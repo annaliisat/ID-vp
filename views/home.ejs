@@ -10,10 +10,39 @@
 	<p>See leht on loodud veebiprogrammeerimise kursusel <a href="https://www.tlu.ee">Tallinna Ülikoolis</a> ning ei sisalda tõsiseltvõetavat sisu!</p>
 
 	<ul>
-		<li><a href="/logout">Logi välja</a></li>
-		<br>
-		<li><a href="/galleryPhotoUpload">Fotode üleslaadimine pildigaleriisse</a></li>
+		<li><a href="/news">Vaata kõiki uudiseid</a></li>
+        <li><a href="/add-news">Lisa uus uudis</a></li>
+        <li><a href="/galleryPhotoUpload">Fotode üleslaadimine pildigaleriisse</a></li>
+        <li><a href="/logout">Logi välja</a></li>
 	</ul>
+	
+	<hr>
+	
+	<h2>Viimane uudis</h2>
+
+    <% if (locals.latestNews && latestNews) { %>
+        <div style="border: 1px solid #ccc; padding: 20px; border-radius: 5px; max-width: 600px; margin-bottom: 20px;">
+            <h3><%= latestNews.news_title %></h3>
+            
+            <p>
+                <small>
+                    Lisatud: <%= new Date(latestNews.created).toLocaleDateString('et-EE') %> | 
+                    Autor: <%= latestNews.firstname %> <%= latestNews.lastname %>
+                </small>
+            </p>
+
+            <!-- Kui uudisel on pilt, kuvame selle -->
+            <% if (latestNews.filename) { %>
+                <div>
+                    <img src="/uploads/<%= latestNews.filename %>" alt="<%= latestNews.alttext || 'Uudise pilt' %>" style="max-width: 100%; height: auto;">
+                </div>
+            <% } %>
+
+            <p style="white-space: pre-line;"><%= latestNews.news_text %></p>
+        </div>
+    <% } else { %>
+        <p>Hetkel ühtegi aktiivset uudist pole.</p>
+    <% } %>
 	
 </body>
 </html>

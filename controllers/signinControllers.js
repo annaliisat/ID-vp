@@ -15,7 +15,7 @@ const signinPage = (req, res) => {
 
 const signinPagePost = async (req, res) => {
 	let conn;
-	if(!req.body.enailInput || !req.body.passwordInput){
+	if(!req.body.emailInput || !req.body.passwordInput){
 	return res.render('signin', {notice: 'Konto andmed on sisestamata!'});
 	}
 	
@@ -28,7 +28,7 @@ const signinPagePost = async (req, res) => {
         });
 		
 		
-		let sqlReq = 'SELECT id, passwordFROM users WHERE email = ?';
+		let sqlReq = 'SELECT id, password FROM users WHERE email = ?';
 		const [users] = await conn.execute(sqlReq, [req.body.emailInput]);
 		//kui sellist üldse ei leitud
 		if(users.length === 0){
@@ -39,6 +39,8 @@ const signinPagePost = async (req, res) => {
 		const match = await argon.verify(user.password, req.body.passwordInput);
 		if(match){
 			console.log('Oled sisseloginud kasutajana: ' + user.id);
+			//paneme sessiooni käima ja salvestame sessioonumuutujad
+			req.session.userId = user.id;
 			return res.redirect('/home');
 		} else {
 			return res.render('signin', {notice: 'Kasutajatunus ja/või salasõna on vale!'});

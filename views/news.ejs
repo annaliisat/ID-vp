@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+	<meta charset="utf-8">
+	<title>Annaliisa Tiirik, veebiprogrammeerimine</title>
+</head>
+<body>
+	<img src="pic/veebiprogrammeerimine_2026_ID.png" alt="bänner">
+		<form method="POST" enctype="multipart/form-data">
+		<label for="titleInput">Uudise pealkiri</label>
+		<input type="text" name="titleInput" id="titleInput" placeholder="Uudise pealkiri ..." required>
+		<br>
+		<label for="contentInput">Uudise sisu</label>
+		<br>
+		<textarea id="contentInput" name="contentInput" placeholder="Uudise sisu ..." 	required rows="5" cols="80" maxlength="2000"></textarea>
+		<br>
+		<label for="expireInput">Uudise aegumiskuupäev</label>
+		<input type="date" name="expireInput" id="expireInput" value="<%= defaultExpireDate %>" required>
+		<br>
+		<label for="newsPhoto">Uudise foto (valikuline)</label><br>
+        <input type="file" name="newsPhoto" id="newsPhoto" accept="image/*">
+        <br><br>
+		<label for="altText">Foto alt-tekst</label><br>
+        <input type="text" name="alttext" id="altText" placeholder="Kirjeldus pildist...">
+        <br><br>
+		<input type="submit" name="newsSubmit" value="Salvesta">
+	</form>
+	<p>
+		<a href="/">Tagasi avalehele</a> |
+		<a href="/news">Vaata kõiki uudiseid</a>
+	</p>
+	
+</body>
+</html>

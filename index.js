@@ -6,8 +6,10 @@ const bodyparser = require('body-parser');
 const mysql = require('mysql2/promise');
 //moodul .env keskkonnamuutujate lugemiseks
 require('dotenv').config();
-require('dotenv').config({ path: __dirname + '/.env' });
+const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
 
+const checkLogin = require('./src/checkLogin');
 const dateET = require('./src/dateTimeET');
 
 const textRef = "public/txt/vanasonad.txt";
@@ -15,6 +17,8 @@ const regtextRef = "public/txt/visits.txt";
 
 //käivitan funktsiooni express() ja annan nimeks app
 const app = express();
+//võtame kasutusele sessioonihalduri
+app.use(session({secret: process.env.SES_SECRET, saveUninitialized: false, resave: true}));
 //määrame renderdusmootori: EJS
 app.set('view engine', 'ejs');
 //määrame avalikuna kasutatava kataloogi
@@ -23,21 +27,54 @@ app.use(express.static('public'));
 app.use(bodyparser.urlencoded({extended: true}));
 
 //marsruudid
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     const dayNow = dateET.weekday();
     const dateNow = dateET.date(0);
     const timeNow = dateET.time();
-
-    res.render('index', {
-        dayNow: dayNow,
-        dateNow: dateNow,
-        timeNow: timeNow
-    });
+	let conn;
+	try {
+		let sqlReq = "SELECT filename, alttext FROM galleryphotos WHERE id=(SELECT MAX(id) FROM galleryphotos WHERE privacy=? AND deleted IS NULL)";
+		const privacy = 3;
+		conn = await mysql.createConnection({
+			host: process.env.DB_HOST,
+			user: process.env.DB_USER,
+			password: process.env.DB_PASS,
+			database: process.env.DB_NAME
+		});
+		const [rows, fields] = await conn.execute(sqlReq, [privacy]);
+		let imgAlt = "Avalik foto";
+		if(rows[0].alttext != ""){
+			imgAlt = rows[0].alttext;
+		}
+		res.render('index', {dayNow: dayNow, dateNow: dateNow, timeNow: timeNow, imgFile: "gallery/normal/" + rows[0].filename, imgAlt: imgAlt});
+	}
+	catch (err) {
+		res.render('index', {dayNow: dayNow, dateNow: dateNow, timeNow: timeNow, imgFile: "pic/vp_logo_small.png", imgAlt: "VP logo"});
+	}
+	finally {
+		if(conn){
+			await conn.end();
+			//console.log("AndmebaasiÃ¼hendus suletud!");
+		}
+	}
+	//res.send('Express.js veeb lÃ¤kski kÃ¤ima!');
+	
 });
 
-//sisseloginud kasutajate avaleht
-app.get('/home', (req, res) => {
-	res.render('home')
+
+// Ruutingute kaasamine
+const addnewsRouter = require('./routes/addnewsRoutes');
+app.use('/', addnewsRouter);
+
+// Kontrolleri kaasamine /home jaoks (kui on vaja otse index.js-is)
+const newsController = require('./controllers/addnewsControllers');
+app.get('/home', checkLogin.isLogin, newsController.getHomeNews);
+
+//väljalogimine
+app.get('/logout', (req, res) => {
+	//hävitame sessiooni 
+	req.session.destroy();
+	res.redirect('/');	
 });
 
 app.get('/vanasona', async (req, res)=>{
@@ -89,6 +126,7 @@ app.use('/signin', signinRouter);
 app.get('/logout', (req, res) => {
 	res.redirect('/');
 });
+
 
 app.get('/', async (req, res) => {
     let conn;

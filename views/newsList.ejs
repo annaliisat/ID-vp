@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="utf-8">
+    <title>Kõik uudised - Annaliisa Tiirik, veebiprogrammeerimine</title>
+</head>
+<body>
+    <img src="pic/veebiprogrammeerimine_2026_ID.png" alt="bänner">
+    
+    <h1>Kõik uudised</h1>
+
+    <% if (newsList && newsList.length > 0) { %>
+        <% newsList.forEach(news => { %>
+            <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+                <h2><%= news.news_title %></h2>
+                
+                <p>
+                    <small>
+                        Lisatud: <%= new Date(news.created).toLocaleDateString('et-EE') %> | 
+                        Autor: <%= news.firstname %> <%= news.lastname %>
+                    </small>
+                </p>
+
+                <!-- Kui uudisel on pilt, siis kuvame selle -->
+                <% if (news.filename) { %>
+                    <div>
+                        <img src="/uploads/<%= news.filename %>" alt="<%= news.alttext || 'Uudise pilt' %>" style="max-width: 300px; height: auto;">
+                    </div>
+                <% %>
+
+                <p style="white-space: pre-line;"><%= news.news_text %></p>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <p>Hetkel ühtegi aktiivset uudist pole.</p>
+    <% } %>
+
+    <p>
+        <a href="/">Tagasi avalehele</a> | 
+        <a href="/add-news">Lisa uus uudis</a>
+    </p>
+</body>
+</html>
